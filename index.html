@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Coins free</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <style>
+      html{
+        height: 100%
+      }
+      
+       body{
+        background-image: url('bg-1.jpg');
+        background-color: #59AAE3;
+        background-repeat: no-repeat, repeat;
+        background-size: cover;
+        font-family: 'Lato', sans-serif;
+        margin: 0;
+        min-height: 100%;
+        display: flex;
+    }
+
+      .container{
+        width: 60%;
+        margin: auto;
+        background: rgba(255,255,255, 0.9);
+        border-radius: 5px;
+        padding: 20px;
+        display: flex;
+      }
+
+      .info{
+        text-align: center;
+        flex: 1;
+      }
+      .coin-toggles{
+        flex: 1;
+      }
+
+      .token-buttons{
+        margin-top: 15px;
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+     
+      .token{
+        /* background: #81C1EE; */
+        /* color: #fff; */
+        font-size: 1.1em;
+        padding: 10px;
+        border: 1px solid #81C1EE;
+        border-radius: 5px;
+        width: 100px;
+        margin: 1% 0 0 1%;
+        text-align: center;
+        transition: all 0.5s;
+      }
+      .token:hover{
+        cursor: pointer;
+        transform: scale(1.1)
+      } 
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="info">
+        <h1>Coin: <span id="response"></span></h1>
+        <p>$<span id="price">0.00</span></p>
+        <p><span id="change_24">0.00</span> %</p>
+        <div class="search-limit">
+          <label for="limit">Top: </label>
+            <select name="limit" id="">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+      </div>
+      <div class="coin-toggles">
+        <div class="token-buttons">
+
+        </div> 
+      </div>
+
+    </div>
+
+
+    <!-- <script type="text/javascript">
+    function contactServer() {
+      var xhttp = new XMLHttpRequest();(
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+         document.getElementById("response").innerHTML = this.responseText;
+        }
+      };
+      xhttp.open("GET", "ajax-request", true);
+      xhttp.send();
+      }
+    </script> -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script type="text/javascript">
+    const limitToggle = document.querySelector('select');
+    let limit = 10;
+    limitToggle.addEventListener('change', (e) => { 
+
+      document.querySelector('.token-buttons').innerHTML = ''
+       limit = e.target.value;
+      console.log(limit)
+      axios.get(`https://api.coinmarketcap.com/v2/ticker/?limit=${limit}`)
+    .then(res => {
+      let mycoins = Object.values(res.data.data)
+      console.log(mycoins)
+      mycoins.forEach((coin)=>{
+        let el = document.createElement('div');
+        el.className = `token ${coin.name.toLowerCase()}`;
+        el.innerHTML = coin.name;
+        el.addEventListener('click', contactServer)
+        document.querySelector('.token-buttons').appendChild(el);
+      })
+    })
+    })
+
+    axios.get(`https://api.coinmarketcap.com/v2/ticker/?limit=${limit}`)
+    .then(res => {
+      let mycoins = Object.values(res.data.data)
+      console.log(mycoins)
+      mycoins.forEach((coin)=>{
+        let el = document.createElement('div');
+        el.className = `token ${coin.name.toLowerCase()}`;
+        el.innerHTML = coin.name;
+        el.addEventListener('click', contactServer)
+        document.querySelector('.token-buttons').appendChild(el);
+      })
+    })
+
+    // document.querySelectorAll('.token-buttions.token').forEach(token => {
+    //     console.log(token)
+    //   token.addEventListener('click', (e) =>{
+    //     alert('hwllo')
+    //     // axios.get(`https://api.coinmarketcap.com/v1/ticker/?limit=${limit}/`)
+    //     axios.get(`https://api.coinmarketcap.com/v1/ticker/${e.target.innerHTML}/`)
+    //     .then(response => {
+    //       console.log(response.data[0].name);
+    //       document.getElementById("response").innerHTML = response.data[0].name;
+    //       document.getElementById("price").innerHTML = `${response.data[0].price_usd}`;
+    //     })
+    //   })
+    // })
+
+    function contactServer(e) {
+      // axios.get('http://localhost:3000/ajax-request')
+      let search = ''
+      e == undefined ? search = '' : search = e.target.innerHTML
+      axios.get(`https://api.coinmarketcap.com/v1/ticker/${search}/`)
+      .then(response => {
+        console.log(response.data[0].name);
+        document.getElementById("response").innerHTML = response.data[0].name;
+        document.getElementById("price").innerHTML = response.data[0].price_usd;
+        document.getElementById("change_24").innerHTML = response.data[0].percent_change_24h;
+        if (response.data[0].percent_change_24h < 0) {
+          document.getElementById("change_24").style.color = 'red'
+        } else {
+          document.getElementById("change_24").style.color = 'green'
+        }
+      })
+    }
+  function searchCoin(e){
+    // e.preventDefault();
+    const coin = e.target.elements.search_text.value
+    console.log(coin)
+    // axios.get(`https://api.coinmarketcap.com/v1/ticker/${e.target.elements.search_text.value}/`)
+    // .then(response => {
+    //   console.log(response)
+    // })
+  }
+
+    </script>
+  </body>
+</html>
